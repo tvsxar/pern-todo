@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const pool = require('../db');
+const pool = require('../config/db');
 
 // Create a new todo
 router.post('/', async (req, res) => {
