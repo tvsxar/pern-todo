@@ -7,7 +7,8 @@ const {
   GraphQLList,
   GraphQLNonNull,
 } = require("graphql");
-const todoResolvers = require("../resolvers/todoResolvers");
+
+const { Query, Mutations } = require("../resolvers/todoResolvers");
 
 const todoType = new GraphQLObjectType({
   name: "Todo",
@@ -23,7 +24,7 @@ const RootQuery = new GraphQLObjectType({
   fields: {
     getTodos: {
       type: new GraphQLList(todoType),
-      resolve: todoResolvers.Query.getTodos
+      resolve: Query.getTodos
     }
   }
 });
@@ -34,7 +35,7 @@ const Mutation = new GraphQLObjectType({
     addTodo: {
       type: todoType,
       args: { description: { type: new GraphQLNonNull(GraphQLString) } },
-      resolve: todoResolvers.Mutation.addTodo
+      resolve: Mutations.addTodo
     },
     updateTodo: {
       type: todoType,
@@ -43,19 +44,17 @@ const Mutation = new GraphQLObjectType({
         description: { type: new GraphQLNonNull(GraphQLString) },
         completed: { type: new GraphQLNonNull(GraphQLBoolean) }
       },
-      resolve: todoResolvers.Mutation.updateTodo
+      resolve: Mutations.updateTodo
     },
     deleteTodo: {
       type: todoType,
       args: { todo_id: { type: new GraphQLNonNull(GraphQLInt) } },
-      resolve: todoResolvers.Mutation.deleteTodo
+      resolve: Mutations.deleteTodo
     }
   }
 });
 
-const todoSchema = new GraphQLSchema({
+module.exports = new GraphQLSchema({
   query: RootQuery,
   mutation: Mutation,
 });
-
-module.exports = todoSchema;

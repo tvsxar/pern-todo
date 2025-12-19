@@ -1,7 +1,7 @@
-# PERN Todo App
+# PERN Todo App 
 
-A Fullstack Todo application built with the **PERN stack** (PostgreSQL, Express.js, React, Node.js).\
-This project demonstrates a simple task management system with REST API endpoints and a React frontend.
+A fullstack Todo application built with the PERN stack (PostgreSQL, Express.js, React, Node.js) and GraphQL.\
+This project demonstrates a task management system where users can create, read, update, and delete todos using a GraphQL API and a React frontend.
 
 ## Table of Contents
 
@@ -11,7 +11,7 @@ This project demonstrates a simple task management system with REST API endpoint
 - [Architecture & Flow](#architecture--flow)
 - [Installation & Run](#installation--run)
 - [Project Structure](#project-structure)
-- [API Endpoints](#api-endpoints)
+- [GraphQL API](#graphql-api)
 - [Author](#author)
 
 ## Description
@@ -23,44 +23,44 @@ This application allows users to:
 - Edit existing tasks
 - Delete tasks
 
-The backend is implemented using **Node.js** with **Express.js** and connected to a **PostgreSQL** database via the `pg` library.\
-The frontend is built using **React** (with Vite) and communicates with the backend via HTTP requests (REST API).
+The backend is implemented using **Node.js** with **Express.js** connected to a **PostgreSQL** via the `pg` library and now exposing a GraphQL API.\
+The frontend is built with React (Vite) and communicates with the backend via GraphQL queries and mutations.
 
 > **Note:** Authentication is not implemented yet, so all users can modify the database.
 
 ## Features
 
-- List all tasks
-- Create a task
-- Update a task
-- Delete a task
-- Fully functional REST API
-- React frontend with state management
+- View all todos
+- Add a new todo
+- Update a todo (description & completion status)
+- Delete a todo
+- Fully functional GraphQL API
+- React frontend with state management (Context API / Hooks)
 
 ## Technologies & Stack Explanation
 
-- **PostgreSQL:** relational database to store tasks (`todo` table with `description`, `completed` fields).
-- **Node.js / Express.js:** backend server handles requests, routing, and database queries.
+- **PostgreSQL:** relational database to store tasks (`todo` table with `todo_id`, `description`, `completed`).
+- **Node.js / Express.js:** backend server handles requests and executes database queries.
 - **React (Vite):** frontend framework for building a responsive UI and communicating with backend.
+- **GraphQL / graphql-http:** backend GraphQL API to query and mutate todo data.
 - **pg:** Node.js library for connecting to PostgreSQL.
 - **CORS:** allows frontend to communicate with backend on a different port.
 
-This stack is called **PERN**: PostgreSQL + Express + React + Node.js.
+This stack is known as **PERN**, with the addition of GraphQL for modern API design.
 
 ## Architecture & Flow
 
-1. **Frontend React** sends HTTP requests to the backend using `fetch`.
-2. **Express.js server** receives requests and executes logic.
-3. **PostgreSQL** stores task data. Queries are executed via the `pg` pool.
-4. The backend sends the response back to the frontend.
-5. React updates the UI based on the response.
+1. **Frontend React** sends GraphQL queries/mutations to the backend.
+2. **Express.js server** receives requests and passes them to GraphQL handler.
+3. **Resolvers** handle database queries via pg and return data.
+4. **PostgreSQL** stores the todo data.
+5. **Frontend** updates UI based on response.
 
-> Example: when a user adds a new todo:
+> Example: Adding a todo:
 >
-> - React sends `POST /todos` with `{ description, completed }`
-> - Express receives the request and executes an SQL `INSERT` query
-> - PostgreSQL saves the task
-> - Backend returns the new task, React updates the state
+> - React sends a `mutation to /graphql` with `{ description }`.
+> - GraphQL resolver executes `INSERT` query in PostgreSQL.
+> - New todo is returned and React updates the state.
 
 ## Installation & Run
 
@@ -76,18 +76,14 @@ cd backend
 
 ```bash
 npm install
-npm i express pg cors dotenv
+npm i express pg cors dotenv graphql graphql-http typescript ts-node nodemon @types/node @types/pg
 ```
 
 3. Create a `.env` file with database connection:
 
 ```env
 PORT=4999
-DB_USER=your_db_user
-DB_PASSWORD=your_db_password
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=your_db_name
+CONNECTION_STRING=postgres://your_db_user:your_db_password@localhost:5432/your_db_name
 ```
 
 4. Start the server:
@@ -109,7 +105,7 @@ cd frontend
 ```bash
 npm install
 npm i react-icons
-npm i tailwindcss @tailwindcss/vite
+npm i tailwindcss @tailwindcss/vite react-icons typescript @types/react @types/react-dom
 ```
 
 3. Start the frontend:
@@ -125,28 +121,67 @@ Frontend will be available at `http://localhost:5173` by default.
 ```
 todo/
 ├─ backend/
-│  ├─ db.js           # PostgreSQL connection pool
-│  ├─ index.js        # Express server setup
-│  ├─ routes/
-│  │  └─ todos.js     # REST API routes for todos
+│  ├─ config/
+│  │  └─ db.js          # PostgreSQL connection pool
+│  ├─ resolvers/
+│  │  └─ todoResolvers.ts # GraphQL resolvers
+│  ├─ schema/
+│  │  └─ todoSchema.ts  # GraphQL schema
+│  ├─ index.ts          # Express + GraphQL server
 │  └─ package.json
 ├─ frontend/
 │  ├─ src/
-│  │  ├─ App.jsx       # Main App component
-│  │  └─ main.jsx      # Entry point
+│  │  ├─ App.tsx        # Main App component
+│  │  ├─ main.tsx       # Entry point
+│  │  └─ components/    # UI components
 │  └─ package.json
 ```
 
-## API Endpoints
+## GraphQL API
 
-| Method | Endpoint     | Description       | Body / Params                |
-| ------ | ------------ | ----------------- | ---------------------------- |
-| GET    | `/todos`     | Get all todos     | None                         |
-| POST   | `/todos`     | Create a new todo | `{ description, completed }` |
-| PUT    | `/todos/:id` | Update a todo     | `{ description, completed }` |
-| DELETE | `/todos/:id` | Delete a todo     | `id` as URL param            |
+Get Todos:
+```bash
+query {
+  getTodos {
+    todo_id
+    description
+    completed
+  }
+}
+```
 
-> All endpoints currently do not require authentication.
+Add Todo:
+```bash
+mutation {
+  addTodo(description: "Learn GraphQL") {
+    todo_id
+    description
+    completed
+  }
+}
+```
+
+Update a todo:
+```bash
+mutation {
+  updateTodo(todo_id: 1, description: "Learn TS", completed: true) {
+    todo_id
+    description
+    completed
+  }
+}
+```
+
+Delete a todo:
+```bash
+mutation {
+  deleteTodo(todo_id: 1) {
+    todo_id
+    description
+    completed
+  }
+}
+```
 
 ## Author
 

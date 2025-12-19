@@ -1,8 +1,7 @@
 import TodoForm from "../components/TodoForm.jsx";
-import TodoList from "../components/TodoList.js";
+import TodoList from "../components/TodoList.jsx";
 import { useContext } from "react";
 import { TodoContext } from "../context/TodoContext.jsx";
-import type { TodoContextType } from '../types/types.js';
 
 function HomePage() {
   const { description, setDescription, error, handleSubmit, todos, loading } =
