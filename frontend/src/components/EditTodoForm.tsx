@@ -1,5 +1,14 @@
 import { IoClose } from "react-icons/io5";
 import { MdOutlineDone } from "react-icons/md";
+import type { Todo } from '../types/types.js';
+
+interface EditTodoFormProps {
+  editedText: string;
+  setEditedText: (text: string) => void;
+  setEditing: (id: string | null) => void;
+  saveEdit: (id: string) => void;
+  todo: Todo
+}
 
 function EditTodoForm({
   editedText,
@@ -7,7 +16,7 @@ function EditTodoForm({
   setEditing,
   saveEdit,
   todo,
-}) {
+}: EditTodoFormProps) {
   return (
     <form
       onSubmit={(e) => {

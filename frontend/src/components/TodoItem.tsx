@@ -1,10 +1,15 @@
 import { MdModeEditOutline, MdOutlineDone } from "react-icons/md";
 import { FaTrash } from "react-icons/fa";
-import EditTodoForm from "./EditTodoForm";
+import EditTodoForm from "./EditTodoForm.js";
 import { useContext } from "react";
-import { TodoContext } from "../context/TodoContext";
+import { TodoContext } from "../context/TodoContext.js";
+import type { Todo } from '../types/types.js';
 
-function TodoItem({ todo }) {
+interface TodoItemProps {
+  todo: Todo
+}
+
+function TodoItem({ todo }: TodoItemProps) {
   const {
     editedText,
     setEditedText,

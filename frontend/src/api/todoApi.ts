@@ -34,8 +34,11 @@ export const graphql = {
         }`,
 };
 
-export default async function fetchGraphQL(query, variables = {}) {
-  const response = await fetch(import.meta.env.VITE_API_URL, {
+// Теперь TypeScript знает, что VITE_API_URL это string
+const API_URL = import.meta.env.VITE_API_URL;
+
+export default async function fetchGraphQL<T>(query: string, variables = {}) {
+  const response = await fetch(API_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ query, variables }),
@@ -43,6 +46,6 @@ export default async function fetchGraphQL(query, variables = {}) {
 
   const result = await response.json();
   if (result.errors)
-    throw new Error(result.errors.map((e) => e.message).join(", "));
-  return result.data;
+    throw new Error(result.errors.map((e: any) => e.message).join(", "));
+  return result.data as T;
 }

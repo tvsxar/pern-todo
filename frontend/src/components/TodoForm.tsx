@@ -1,4 +1,10 @@
-function TodoForm({ description, setDescription, handleSubmit }) {
+interface TodoFormProps {
+  description: string;
+  setDescription: (text: string) => void;
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+}
+
+function TodoForm({ description, setDescription, handleSubmit }: TodoFormProps) {
   return (
     <form
           onSubmit={handleSubmit}

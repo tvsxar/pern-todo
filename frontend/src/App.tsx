@@ -1,5 +1,5 @@
-import TodoProvider from './context/TodoContext';
-import HomePage from "./pages/HomePage";
+import TodoProvider from './context/TodoContext.jsx';
+import HomePage from "./pages/HomePage.jsx";
 
 function App() {
   return (

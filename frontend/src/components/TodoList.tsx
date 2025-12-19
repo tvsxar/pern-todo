@@ -1,6 +1,11 @@
-import TodoItem from "./TodoItem";
+import TodoItem from "./TodoItem.js";
+import type { Todo } from '../types/types.js';
 
-function TodoList({ todos }) {
+interface TodoListProps {
+  todos: Todo[]
+}
+
+function TodoList({ todos }: TodoListProps) {
   return (
     <ul className="flex flex-col gap-y-4">
       {todos.map((todo) => {
